@@ -1,0 +1,73 @@
+:root {
+  /* ── Brand — warm brown palette ── */
+  --color-primary:       #7C5C3E;
+  --color-primary-dark:  #3E2A18;
+  --color-primary-light: #F2EAE0;
+
+  /* ── Status ── */
+  --color-pending:       #8C8278;
+  --color-pending-bg:    #F2EDE8;
+  --color-progress:      #B07030;
+  --color-progress-bg:   #FAF0E2;
+  --color-done:          #5A7A3A;
+  --color-done-bg:       #EAF2E0;
+
+  /* ── Priority ── */
+  --color-high:          #C04040;
+  --color-high-bg:       #FAECEC;
+  --color-medium:        #B07030;
+  --color-medium-bg:     #FAF0E2;
+  --color-low:           #5A7A3A;
+  --color-low-bg:        #EAF2E0;
+
+  /* ── Neutral — warm off-whites ── */
+  --color-text-primary:   #2C2118;
+  --color-text-secondary: #8C7A6A;
+  --color-border:         rgba(80, 50, 20, 0.10);
+  --color-bg:             #F7F2EC;
+  --color-surface:        #FFFDF9;
+  --color-surface-raised: #FFFDF9;
+
+  /* ── Avatar palette — warm tones ── */
+  --av-0-bg: #F2EAE0; --av-0-fg: #3E2A18;
+  --av-1-bg: #FAF0E2; --av-1-fg: #7A4A10;
+  --av-2-bg: #E8EEF6; --av-2-fg: #1A3C6A;
+  --av-3-bg: #F5EAF0; --av-3-fg: #5A1E3A;
+  --av-4-bg: #EAF2E2; --av-4-fg: #2E5A18;
+  --av-5-bg: #EEF0F8; --av-5-fg: #2A3080;
+  --av-6-bg: #FAF0EA; --av-6-fg: #5A2010;
+  --av-7-bg: #F0EDE8; --av-7-fg: #4A3E32;
+
+  /* ── Spacing ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+
+  /* ── Radius ── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-full: 999px;
+
+  /* ── Typography ── */
+  --font-sans: 'Georgia', 'Times New Roman', serif;
+  --font-ui:   -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --text-xs:  11px;
+  --text-sm:  13px;
+  --text-md:  15px;
+  --text-lg:  17px;
+  --text-xl:  20px;
+  --text-2xl: 24px;
+
+  /* ── Layout ── */
+  --topbar-height:    52px;
+  --bottomnav-height: 60px;
+  --max-width:        430px;
+
+  /* ── Shadow ── */
+  --shadow-card: 0 1px 4px rgba(80, 50, 20, 0.08);
+  --shadow-modal: 0 8px 32px rgba(80, 50, 20, 0.15);
+}

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: kitchen-cleaning-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kitchen-cleaning-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://your-frontend.vercel.app  # update this
+
+databases:
+  - name: kitchen-cleaning-db
+    databaseName: kitchen_cleaning
+    plan: free
