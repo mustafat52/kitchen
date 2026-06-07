@@ -3,31 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../../store/authStore'
 import { users, displayName } from '../../data/users'
 
-const ROLE_CONFIG = {
-  zone_admin:  { label: 'Zone Admin', icon: '🗂️', order: 1 },
-  volunteer:   { label: 'Volunteer',  icon: '🙋', order: 2 },
-}
-
 const AVATAR_COLORS = Array.from({ length: 8 }, (_, i) => ({
   bg: `var(--av-${i}-bg)`, fg: `var(--av-${i}-fg)`,
 }))
 
 const GREETINGS = ['Welcome back', 'Marhaba', 'Ahlan wa Sahlan']
 
-const grouped = Object.entries(
-  users
-    .filter((u) => ['zone_admin', 'volunteer'].includes(u.role))
-    .reduce((acc, u) => {
-      if (!acc[u.role]) acc[u.role] = []
-      acc[u.role].push(u)
-      return acc
-    }, {})
-).sort(([a], [b]) => ROLE_CONFIG[a].order - ROLE_CONFIG[b].order)
-
 // ── Welcome overlay shown after login ──
 function WelcomeOverlay({ user, onDone }) {
   const [phase, setPhase] = useState('in')
-  const color = AVATAR_COLORS[(user.id - 1) % 8]
+  const color    = AVATAR_COLORS[(user.id - 1) % 8]
   const firstName = user.name.split(' ')[0]
   const greeting  = GREETINGS[user.id % GREETINGS.length]
 
@@ -51,14 +36,10 @@ function WelcomeOverlay({ user, onDone }) {
         : 'opacity 0.45s ease, transform 0.45s ease',
       gap: 20,
     }}>
-
-      {/* Ripple rings */}
       <div style={{ position: 'relative', width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {[0, 1, 2].map((i) => (
           <div key={i} style={{
-            position: 'absolute',
-            width: 120, height: 120,
-            borderRadius: '50%',
+            position: 'absolute', width: 120, height: 120, borderRadius: '50%',
             border: '2px solid rgba(255,255,255,0.25)',
             animation: `ripple 1.8s ease-out ${i * 0.4}s infinite`,
           }} />
@@ -84,7 +65,7 @@ function WelcomeOverlay({ user, onDone }) {
           {firstName}
         </p>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6 }}>
-          {ROLE_CONFIG[user.role]?.label} · Ashara 1448H London
+          Ashara 1448H London
         </p>
       </div>
 
@@ -116,7 +97,7 @@ function WelcomeOverlay({ user, onDone }) {
 }
 
 export default function LoginPage() {
-  const { login, loginWithIts, user, isLoading, loginError, clearError } = useAuthStore()
+  const { loginWithIts, user, isLoading, loginError, clearError } = useAuthStore()
   const navigate = useNavigate()
 
   const [its, setIts]               = useState('')
@@ -140,15 +121,13 @@ export default function LoginPage() {
     loginWithIts(its)
   }
 
-  const handleDemoLogin = (its) => {
-    loginWithIts(its)
+  const handleQuickLogin = (userIts) => {
+    loginWithIts(userIts)
   }
 
   return (
     <>
-      {pendingUser && (
-        <WelcomeOverlay user={pendingUser} onDone={handleAnimDone} />
-      )}
+      {pendingUser && <WelcomeOverlay user={pendingUser} onDone={handleAnimDone} />}
 
       <div className="fade-in" style={{
         minHeight: '100dvh',
@@ -157,6 +136,7 @@ export default function LoginPage() {
         padding: '0 var(--space-lg) var(--space-xl)',
         overflowY: 'auto',
       }}>
+
         {/* Brand */}
         <div style={{ textAlign: 'center', margin: 'var(--space-xl) 0 var(--space-lg)' }}>
           <div style={{
@@ -184,7 +164,7 @@ export default function LoginPage() {
             borderRadius: 'var(--radius-md)',
             padding: 3, marginBottom: 'var(--space-lg)',
           }}>
-            {[['its', '🔑 ITS Login'], ['demo', '👤 Quick access']].map(([t, label]) => (
+            {[['its', '🔑 ITS Login'], ['quick', '👤 Quick Access']].map(([t, label]) => (
               <button key={t} onClick={() => { setTab(t); clearError && clearError() }} style={{
                 height: 38, borderRadius: 'var(--radius-sm)', border: 'none',
                 background: tab === t ? 'var(--color-primary)' : 'transparent',
@@ -195,7 +175,7 @@ export default function LoginPage() {
             ))}
           </div>
 
-          {/* ITS login */}
+          {/* ── ITS Login ── */}
           {tab === 'its' && (
             <div style={{
               background: 'var(--color-surface)',
@@ -205,7 +185,11 @@ export default function LoginPage() {
               display: 'flex', flexDirection: 'column', gap: 'var(--space-md)',
             }}>
               <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                <label style={{
+                  fontSize: 'var(--text-xs)', fontWeight: 600,
+                  color: 'var(--color-text-secondary)',
+                  display: 'block', marginBottom: 6,
+                }}>
                   ITS Number
                 </label>
                 <input
@@ -217,7 +201,9 @@ export default function LoginPage() {
                   style={{
                     width: '100%', height: 52,
                     borderRadius: 'var(--radius-md)',
-                    border: loginError ? '1.5px solid var(--color-high)' : '1.5px solid var(--color-border)',
+                    border: loginError
+                      ? '1.5px solid var(--color-high)'
+                      : '1.5px solid var(--color-border)',
                     background: 'var(--color-bg)',
                     padding: '0 var(--space-md)',
                     fontSize: 20, letterSpacing: '0.15em',
@@ -231,9 +217,7 @@ export default function LoginPage() {
                   </p>
                 )}
               </div>
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-                Your ITS number is your login ID, shared with you by your admin.
-              </p>
+
               <button
                 onClick={handleItsLogin}
                 disabled={isLoading || !its.trim()}
@@ -253,63 +237,52 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Quick access — demo users */}
-          {tab === 'demo' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xl)' }}>
-              {grouped.map(([role, roleUsers]) => {
-                const cfg = ROLE_CONFIG[role]
+          {/* ── Quick Access — flat list, no role labels ── */}
+          {tab === 'quick' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+              {users.map((u) => {
+                const color = AVATAR_COLORS[(u.id - 1) % 8]
                 return (
-                  <div key={role}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-xs)', marginBottom: 'var(--space-sm)' }}>
-                      <span style={{ fontSize: 14 }}>{cfg.icon}</span>
-                      <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                        {cfg.label}
-                      </span>
+                  <button
+                    key={u.id}
+                    onClick={() => handleQuickLogin(u.its)}
+                    disabled={isLoading}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 'var(--space-md)',
+                      background: 'var(--color-surface)',
+                      border: '0.5px solid var(--color-border)',
+                      borderRadius: 'var(--radius-lg)',
+                      padding: 'var(--space-md)', cursor: 'pointer',
+                      textAlign: 'left', width: '100%', minHeight: 64,
+                      boxShadow: 'var(--shadow-card)',
+                      transition: 'transform 0.15s',
+                    }}
+                    onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                    onMouseUp={(e)   => e.currentTarget.style.transform = 'scale(1)'}
+                  >
+                    <div style={{
+                      width: 46, height: 46, borderRadius: '50%',
+                      background: color.bg, color: color.fg,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 16, fontWeight: 700, flexShrink: 0,
+                    }}>
+                      {u.initials}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                      {roleUsers.map((u) => {
-                        const color = AVATAR_COLORS[(u.id - 1) % 8]
-                        return (
-                          <button key={u.id} onClick={() => handleDemoLogin(u.its)} disabled={isLoading}
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 'var(--space-md)',
-                              background: 'var(--color-surface)',
-                              border: '0.5px solid var(--color-border)',
-                              borderRadius: 'var(--radius-lg)',
-                              padding: 'var(--space-md)', cursor: 'pointer',
-                              textAlign: 'left', width: '100%', minHeight: 60,
-                              boxShadow: 'var(--shadow-card)',
-                              transition: 'transform 0.15s, box-shadow 0.15s',
-                            }}
-                            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                          >
-                            <div style={{
-                              width: 44, height: 44, borderRadius: '50%',
-                              background: color.bg, color: color.fg,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              fontSize: 15, fontWeight: 700, flexShrink: 0,
-                            }}>
-                              {u.initials}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                                {displayName(u.name)}
-                              </p>
-                              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginTop: 2 }}>
-                                ITS: {u.its} · {u.city}
-                              </p>
-                            </div>
-                            <span style={{ fontSize: 18, color: 'var(--color-text-secondary)' }}>›</span>
-                          </button>
-                        )
-                      })}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                        {displayName(u.name)}
+                      </p>
+                      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginTop: 2 }}>
+                        ITS: {u.its}
+                      </p>
                     </div>
-                  </div>
+                    <span style={{ fontSize: 18, color: 'var(--color-text-secondary)' }}>›</span>
+                  </button>
                 )
               })}
             </div>
           )}
+
         </div>
       </div>
     </>
