@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { todayLondon, formatTime } from '../../lib/time'
 import useAuthStore from '../../store/authStore'
 import useTaskStore from '../../store/taskStore'
 import useUserStore from '../../store/userStore'
@@ -182,7 +183,7 @@ async function generatePDF(data) {
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
     const timeStr = task.completedAt
-      ? new Date(task.completedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true })
+      ? formatTime(task.completedAt)
       : '—'
     text(timeStr, colX.time + 2, y + 5.2)
 
@@ -282,7 +283,7 @@ export default function DailyReport() {
   const stats     = getZoneStats(user.zone_id)
   const rawTasks  = getTasksByZone(user.zone_id)
   const moodData  = getSummary(1)
-  const today     = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+  const today = todayLondon()
 
   const tasks = rawTasks.map((t) => {
     const v = getUserById(t.assigned_to)
