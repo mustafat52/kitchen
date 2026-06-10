@@ -15,8 +15,8 @@ function WelcomeOverlay({ user, onDone }) {
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase('show'), 100)
-    const t2 = setTimeout(() => setPhase('out'),  2000)
-    const t3 = setTimeout(() => onDone(),          2600)
+    const t2 = setTimeout(() => setPhase('out'),  2200)
+    const t3 = setTimeout(() => onDone(),          2800)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [])
 
@@ -30,7 +30,7 @@ function WelcomeOverlay({ user, onDone }) {
       transform: phase === 'in' ? 'scale(1.04)' : phase === 'out' ? 'scale(0.96)' : 'scale(1)',
       transition: phase === 'in'
         ? 'opacity 0.35s ease, transform 0.35s ease'
-        : 'opacity 0.45s ease, transform 0.45s ease',
+        : 'opacity 0.5s ease, transform 0.5s ease',
       gap: 20,
     }}>
       <div style={{ position: 'relative', width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -94,27 +94,25 @@ function WelcomeOverlay({ user, onDone }) {
 }
 
 export default function LoginPage() {
-  const { loginWithIts, user, isLoading, loginError, clearError } = useAuthStore()
+  const { loginWithIts, isLoading, loginError, clearError } = useAuthStore()
   const navigate = useNavigate()
 
   const [its, setIts]                = useState('')
   const [pendingUser, setPendingUser] = useState(null)
 
+  // Called when animation finishes — NOW redirect
   const handleAnimDone = () => {
-    if (pendingUser) redirectByRole(pendingUser.role, navigate)
+    redirectByRole(pendingUser.role, navigate)
   }
 
-  useEffect(() => {
-    if (user && !pendingUser) redirectByRole(user.role, navigate)
-  }, [user])
-
-  useEffect(() => {
-    if (user && !pendingUser) setPendingUser(user)
-  }, [user])
-
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!its.trim()) return
-    loginWithIts(its)
+    // Call API directly here so we control the flow
+    const result = await loginWithIts(its, { returnUser: true })
+    if (result?.user) {
+      // Show animation FIRST, redirect only after it finishes
+      setPendingUser(result.user)
+    }
   }
 
   return (
