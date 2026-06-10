@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuthStore from '../../store/authStore'
 
@@ -8,31 +8,25 @@ const AVATAR_COLORS = Array.from({ length: 8 }, (_, i) => ({
 }))
 
 function WelcomeOverlay({ user, onDone }) {
-  const [phase, setPhase] = useState('in')
   const color     = AVATAR_COLORS[(user.id - 1) % 8]
   const firstName = user.name.split(' ')[0]
   const greeting  = GREETINGS[user.id % GREETINGS.length]
 
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase('show'), 100)
-    const t2 = setTimeout(() => setPhase('out'),  2200)
-    const t3 = setTimeout(() => onDone(),          2800)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
-  }, [])
-
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      background: 'var(--color-primary)',
-      opacity: phase === 'in' ? 0 : phase === 'out' ? 0 : 1,
-      transform: phase === 'in' ? 'scale(1.04)' : phase === 'out' ? 'scale(0.96)' : 'scale(1)',
-      transition: phase === 'in'
-        ? 'opacity 0.35s ease, transform 0.35s ease'
-        : 'opacity 0.5s ease, transform 0.5s ease',
-      gap: 20,
-    }}>
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: 'var(--color-primary)',
+        gap: 20,
+        animation: 'overlayIn 0.35s ease both',
+      }}
+      onAnimationEnd={() => {
+        // After the in-animation, wait 1.8s then fade out and redirect
+        setTimeout(() => onDone(), 1800)
+      }}
+    >
       <div style={{ position: 'relative', width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {[0, 1, 2].map((i) => (
           <div key={i} style={{
@@ -54,11 +48,11 @@ function WelcomeOverlay({ user, onDone }) {
         </div>
       </div>
 
-      <div style={{ textAlign: 'center', animation: 'slideUp 0.4s ease 0.25s both' }}>
+      <div style={{ textAlign: 'center', animation: 'slideUp 0.4s ease 0.2s both' }}>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', marginBottom: 6, letterSpacing: '0.08em' }}>
           {greeting}
         </p>
-        <p style={{ fontSize: 26, fontWeight: 700, color: '#fff', fontFamily: 'var(--font-sans)' }}>
+        <p style={{ fontSize: 28, fontWeight: 700, color: '#fff', fontFamily: 'var(--font-sans)' }}>
           {firstName} Bhai
         </p>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6 }}>
@@ -71,11 +65,14 @@ function WelcomeOverlay({ user, onDone }) {
         background: 'rgba(255,255,255,0.15)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         animation: 'popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.5s both',
-      }}>
-        <span style={{ fontSize: 20, color: '#fff' }}>✓</span>
-      </div>
+        fontSize: 20, color: '#fff',
+      }}>✓</div>
 
       <style>{`
+        @keyframes overlayIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
         @keyframes ripple {
           0%   { transform: scale(0.8); opacity: 0.6; }
           100% { transform: scale(1.8); opacity: 0; }
@@ -100,32 +97,31 @@ export default function LoginPage() {
   const [its, setIts]                = useState('')
   const [pendingUser, setPendingUser] = useState(null)
 
-  // Called when animation finishes — NOW redirect
-  const handleAnimDone = () => {
-    redirectByRole(pendingUser.role, navigate)
-  }
-
   const handleLogin = async () => {
-    if (!its.trim()) return
-    // Call API directly here so we control the flow
-    const result = await loginWithIts(its, { returnUser: true })
+    if (!its.trim() || isLoading) return
+    const result = await loginWithIts(its)
     if (result?.user) {
-      // Show animation FIRST, redirect only after it finishes
-      setPendingUser(result.user)
+      setPendingUser(result.user)  // show animation
+      // redirect happens only after animation via onDone
     }
   }
 
   return (
     <>
-      {pendingUser && <WelcomeOverlay user={pendingUser} onDone={handleAnimDone} />}
+      {pendingUser && (
+        <WelcomeOverlay
+          user={pendingUser}
+          onDone={() => redirectByRole(pendingUser.role, navigate)}
+        />
+      )}
 
       <div className="fade-in" style={{
         minHeight: '100dvh',
         background: 'var(--color-bg)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
         padding: '0 var(--space-lg) var(--space-xl)',
       }}>
-
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
           <div style={{
@@ -172,9 +168,7 @@ export default function LoginPage() {
               style={{
                 width: '100%', height: 56,
                 borderRadius: 'var(--radius-md)',
-                border: loginError
-                  ? '1.5px solid var(--color-high)'
-                  : '1.5px solid var(--color-border)',
+                border: loginError ? '1.5px solid var(--color-high)' : '1.5px solid var(--color-border)',
                 background: 'var(--color-bg)',
                 padding: '0 var(--space-md)',
                 fontSize: 22, letterSpacing: '0.2em',

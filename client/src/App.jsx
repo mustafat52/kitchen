@@ -12,12 +12,9 @@ function ProtectedRoute({ children, allowedRoles }) {
   const navigate  = useNavigate()
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login', { replace: true })
-    } else if (allowedRoles && !allowedRoles.includes(user.role)) {
-      redirectByRole(user.role, navigate)
-    }
-  }, [user, allowedRoles, navigate])
+    if (!user) navigate('/login', { replace: true })
+    else if (allowedRoles && !allowedRoles.includes(user.role)) redirectByRole(user.role, navigate)
+  }, [user])
 
   if (!user) return null
   if (allowedRoles && !allowedRoles.includes(user.role)) return null
@@ -27,23 +24,20 @@ function ProtectedRoute({ children, allowedRoles }) {
 function AppRoutes() {
   const { user, refreshUser } = useAuthStore()
 
-  // On app mount, verify token is still valid
+  // Only refresh token validity on mount — do NOT redirect here
+  // Redirect is handled by LoginPage animation completion
   useEffect(() => {
     if (user) refreshUser()
   }, [])
 
   return (
     <Routes>
+      {/* Always render login page freely — it handles its own redirect after animation */}
       <Route path="/login" element={<LoginPage />} />
 
       <Route path="/volunteer"  element={<ProtectedRoute allowedRoles={['volunteer']} ><VolunteerPage /></ProtectedRoute>} />
       <Route path="/zone-admin" element={<ProtectedRoute allowedRoles={['zone_admin']}><ZoneAdminPage /></ProtectedRoute>} />
-
-      <Route path="/profile" element={
-        <ProtectedRoute allowedRoles={['volunteer','zone_admin']}>
-          <ProfilePage />
-        </ProtectedRoute>
-      } />
+      <Route path="/profile"    element={<ProtectedRoute allowedRoles={['volunteer','zone_admin']}><ProfilePage /></ProtectedRoute>} />
 
       <Route path="/" element={
         user
