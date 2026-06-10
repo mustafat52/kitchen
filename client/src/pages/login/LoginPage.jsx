@@ -59,7 +59,7 @@ function WelcomeOverlay({ user, onDone }) {
           {greeting}
         </p>
         <p style={{ fontSize: 26, fontWeight: 700, color: '#fff', fontFamily: 'var(--font-sans)' }}>
-          {firstName}
+          {firstName} Bhai
         </p>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6 }}>
           Ashara 1448H London
