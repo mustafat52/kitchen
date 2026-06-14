@@ -1,4 +1,5 @@
 import TaskCard from '../../components/TaskCard'
+import { getTodayInfo } from '../../lib/calendar'
 import EmptyState from '../../components/EmptyState'
 import useTaskStore from '../../store/taskStore'
 import useAuthStore from '../../store/authStore'
@@ -19,8 +20,31 @@ export default function TaskBoard() {
   const tasks = getFilteredTasks(user.zone_id)
   const stats = getZoneStats(user.zone_id)
 
+  const today = getTodayInfo()
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+
+      {/* Fatimi Calendar Banner */}
+      {today && (
+        <div style={{
+          background: 'var(--color-primary)',
+          borderRadius: 'var(--radius-lg)',
+          padding: 'var(--space-md) var(--space-lg)',
+          color: '#fff',
+        }}>
+          <p style={{ fontSize: 'var(--text-xs)', opacity: 0.8, marginBottom: 2 }}>Ashara 1448H London</p>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <p style={{ fontSize: 'var(--text-lg)', fontWeight: 700, fontFamily: 'var(--font-sans)' }}>
+              Day {today.day}
+            </p>
+            <p style={{ fontSize: 'var(--text-lg)', fontWeight: 700, direction: 'rtl', fontFamily: 'serif' }}>
+              {today.hijriArabic}
+            </p>
+          </div>
+          <p style={{ fontSize: 'var(--text-xs)', opacity: 0.85, marginTop: 2 }}>{today.gregorian}</p>
+        </div>
+      )}
 
       {/* Stats strip */}
       <div style={{

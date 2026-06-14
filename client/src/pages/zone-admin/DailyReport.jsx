@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getTodayInfo, getAsharaLabel } from '../../lib/calendar'
 import { todayLondon, formatTime } from '../../lib/time'
 import useAuthStore from '../../store/authStore'
 import useTaskStore from '../../store/taskStore'
@@ -279,6 +280,8 @@ export default function DailyReport() {
 
   if (!user) return null
 
+  const todayInfo = getTodayInfo()
+
   const zone      = getZoneById(user.zone_id)
   const stats     = getZoneStats(user.zone_id)
   const rawTasks  = getTasksByZone(user.zone_id)
@@ -294,10 +297,12 @@ export default function DailyReport() {
     setGenerating(true)
     try {
       await generatePDF({
-        zoneName:  zone?.name || 'CMZ',
-        adminName: user.name,
-        dayNumber: 1,
-        date:      today,
+        zoneName:   zone?.name || 'CMZ',
+        adminName:  user.name,
+        dayNumber:  todayInfo?.day || 1,
+        date:       today,
+        hijriDate:  todayInfo ? todayInfo.hijri : '2nd Muharram 1448H',
+        hijriArabic: todayInfo ? todayInfo.hijriArabic : 'مُحَرَّم ١٤٤٨',
         stats,
         tasks,
         moods: moodData,
@@ -326,8 +331,13 @@ export default function DailyReport() {
           {zone?.name || 'CMZ'}
         </p>
         <p style={{ fontSize: 'var(--text-xs)', opacity: 0.8 }}>
-          {today}  ·  Day 1 of Ashara 1448H London
+          {today}
         </p>
+        {todayInfo && (
+          <p style={{ fontSize: 'var(--text-xs)', opacity: 0.9, marginTop: 2, fontWeight: 600 }}>
+            Day {todayInfo.day} · {todayInfo.hijri}
+          </p>
+        )}
       </div>
 
       {/* Stats preview */}

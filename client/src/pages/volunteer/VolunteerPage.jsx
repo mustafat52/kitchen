@@ -10,6 +10,7 @@ import TaskHistory from './TaskHistory'
 import useAuthStore from '../../store/authStore'
 import useTaskStore from '../../store/taskStore'
 import useUserStore from '../../store/userStore'
+import { getTodayInfo } from '../../lib/calendar'
 import { displayName } from '../../data/users'
 
 const TABS = [
@@ -48,7 +49,8 @@ export default function VolunteerPage() {
     })
 
   const stats = getVolunteerStats(user.id)
-  const zone  = getZoneById(user.zone_id)
+  const zone     = getZoneById(user.zone_id)
+  const todayInfo = getTodayInfo()
 
   return (
     <div style={{ background: 'var(--color-bg)', minHeight: '100dvh' }}>
@@ -66,11 +68,17 @@ export default function VolunteerPage() {
               color: '#fff',
             }}>
               <p style={{ fontSize: 'var(--text-xs)', opacity: 0.85, marginBottom: 4 }}>
-                {zone ? zone.name : 'CMZ'} · Day 1
+                {zone ? zone.name : 'CMZ'}
+                {todayInfo && ` · Day ${todayInfo.day}`}
               </p>
-              <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 'var(--space-sm)', fontFamily: 'var(--font-sans)' }}>
+              <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 4, fontFamily: 'var(--font-sans)' }}>
                 Marhaba, {displayName(user.name)} 👋
               </h2>
+              {todayInfo && (
+                <p style={{ fontSize: 'var(--text-md)', fontWeight: 600, direction: 'rtl', fontFamily: 'serif', color: 'rgba(255,255,255,0.95)', marginBottom: 'var(--space-sm)' }}>
+                  {todayInfo.hijriArabic}
+                </p>
+              )}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-sm)' }}>
                 <span style={{ fontSize: 'var(--text-xs)', opacity: 0.85 }}>
                   {stats.done} of {stats.total} tasks done
