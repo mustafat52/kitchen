@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../../components/TopBar'
+import PromoCard from '../../components/PromoCard'
 import BottomNav from '../../components/BottomNav'
 import TaskBoard from './TaskBoard'
 import CreateTaskForm from './CreateTaskForm'
@@ -52,6 +53,7 @@ export default function ZoneAdminPage() {
         </div>
       </div>
       <BottomNav tabs={TABS} activeTab={activeTab} onChange={handleTabChange} />
+      <PromoCard />
     </div>
   )
 }

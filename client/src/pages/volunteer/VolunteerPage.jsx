@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../../components/TopBar'
+import PromoCard from '../../components/PromoCard'
 import BottomNav from '../../components/BottomNav'
 import TaskCard from '../../components/TaskCard'
 import ProgressBar from '../../components/ProgressBar'
@@ -141,6 +142,7 @@ export default function VolunteerPage() {
       </div>
 
       <BottomNav tabs={TABS} activeTab={activeTab} onChange={handleTabChange} />
+      <PromoCard />
     </div>
   )
 }
