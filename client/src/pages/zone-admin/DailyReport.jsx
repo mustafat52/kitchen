@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getTodayInfo, getAsharaLabel } from '../../lib/calendar'
+import { getTodayInfo } from '../../lib/calendar'
 import { todayLondon, formatTime } from '../../lib/time'
 import useAuthStore from '../../store/authStore'
 import useTaskStore from '../../store/taskStore'
